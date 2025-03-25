@@ -25,8 +25,10 @@
   Проверяет, что возвращается корректный жанр для книги, если он был установлен.
 
 ### `get_books_with_specific_genre(genre)`
-- **`test_get_books_with_specific_genre_correct_filtering`**  
+- **`test_get_books_with_specific_genre_two_fantasy_books`**  
   Проверяет корректность фильтра книг по заданному жанру.
+- **`test_get_books_with_specific_genre_no_match`**  
+  Проверяет корректность фильтра книг по отсутствующему жанру.
 
 ### `get_books_genre()`
 - **`test_get_books_genre_correct_filling`**  

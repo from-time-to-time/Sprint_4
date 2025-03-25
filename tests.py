@@ -62,29 +62,24 @@ class TestBooksCollector:
 
         assert collector.get_book_genre(title) == genre
 
-    @pytest.mark.parametrize(
-        'books_with_genre, genre_to_test',
-        [
-            ([{'Ведьмак': 'Фантастика'}, {'Гарри Поттер': 'Фантастика'}], 'Фантастика'),
-            ([{'Ведьмак': 'Фантастика'}, {'Сияние': 'Ужасы'}], 'Фантастика'),
-            ([{'Сияние': 'Ужасы'}], 'Комедии')
-        ]
-    )
-    def test_get_books_with_specific_genre_correct_filtering(self, books_with_genre, genre_to_test):
+    def test_get_books_with_specific_genre_two_fantasy_books(self):
         collector = BooksCollector()
 
-        expected_books_count = 0
+        collector.add_new_book("Ведьмак")
+        collector.set_book_genre("Ведьмак", "Фантастика")
+        collector.add_new_book("Гарри Поттер")
+        collector.set_book_genre("Гарри Поттер", "Фантастика")
 
-        for book_dict in books_with_genre:
-            for title, genre in book_dict.items():
-                collector.add_new_book(title)
-                collector.set_book_genre(title, genre)
-                if genre == genre_to_test:
-                    expected_books_count += 1
-
-        actual_books_count = len(collector.get_books_with_specific_genre(genre_to_test))
-        assert expected_books_count == actual_books_count
+        assert len(collector.get_books_with_specific_genre("Фантастика")) == 2
             
+    def test_get_books_with_specific_genre_no_match(self):
+        collector = BooksCollector()
+
+        collector.add_new_book("Сияние")
+        collector.set_book_genre("Сияние", "Ужасы")
+
+        assert len(collector.get_books_with_specific_genre("Комедии")) == 0
+
     def test_get_books_genre_correct_filling(self):
         collector = BooksCollector()
 
@@ -92,15 +87,12 @@ class TestBooksCollector:
         collector.add_new_book('Автостопом по галактике')
         collector.set_book_genre('Мастер и Маргарита', 'Фантастика')
 
-        books_dict = collector.get_books_genre()
+        expected_result = {
+            'Мастер и Маргарита': 'Фантастика',
+            'Автостопом по галактике': '',
+        }
 
-        assert 'Мастер и Маргарита' in books_dict
-        assert books_dict['Мастер и Маргарита'] == 'Фантастика'
-
-        assert 'Автостопом по галактике' in books_dict
-        assert books_dict['Автостопом по галактике'] == ''
-
-        assert len(books_dict) == 2
+        assert collector.get_books_genre() == expected_result
 
     def test_get_books_for_children_exclude_adult_genres(self):
         collector = BooksCollector()
@@ -121,7 +113,6 @@ class TestBooksCollector:
 
         collector.add_new_book('Шерлок Холмс')
         collector.add_new_book('Автостопом по галактике')
-        collector.set_book_genre('Автостопом по галактике', 'Фантастика')
 
         collector.add_book_in_favorites('Шерлок Холмс')
         collector.add_book_in_favorites('Шерлок Холмс')
